@@ -5,17 +5,8 @@
     <color rgba="1 1 1 1"/>
   </material>
 
-  <link name="base_link">
-    <inertial>
-      <origin xyz="0 0 0"/>
-      <mass value="0"/>
-      <inertia ixx="0" ixy="0" ixz="0"
-              iyy="0" iyz="0"
-              izz="0"/>
-    </inertial>
-  </link>
+  <link name="wall_with_door_link">
 
-  <link name="left_wall">
     <visual>
       <origin xyz="-4.25 0 1.5"/>
       <geometry>
@@ -24,23 +15,6 @@
       <material name="white"/>
     </visual>
 
-    <collision>
-      <origin xyz="-4.25 0 1.5"/>
-      <geometry>
-        <box size="7.5 0.2 3"/>
-      </geometry>
-    </collision>
-
-    <inertial>
-      <origin xyz="-4.75 0 1.5"/>
-      <mass value="20.0"/>
-      <inertia ixx="0.06" ixy="0" ixz="0"
-              iyy="0.06" iyz="0"
-              izz="0.06"/>
-    </inertial>
-  </link>
-
-  <link name="right_wall">
     <visual>
       <origin xyz="4.25 0 1.5"/>
       <geometry>
@@ -49,23 +23,6 @@
       <material name="white"/>
     </visual>
 
-    <collision>
-      <origin xyz="4.25 0 1.5"/>
-      <geometry>
-        <box size="7.5 0.2 3"/>
-      </geometry>
-    </collision>
-
-    <inertial>
-      <origin xyz="4.75 0 1.5"/>
-      <mass value="20.0"/>
-      <inertia ixx="0.06" ixy="0" ixz="0"
-              iyy="0.06" iyz="0"
-              izz="0.06"/>
-    </inertial>
-  </link>
-
-  <link name="top_wall">
     <visual>
       <origin xyz="0 0 2.5"/>
       <geometry>
@@ -75,6 +32,20 @@
     </visual>
 
     <collision>
+      <origin xyz="-4.25 0 1.5"/>
+      <geometry>
+        <box size="7.5 0.2 3"/>
+      </geometry>
+    </collision>
+
+    <collision>
+      <origin xyz="4.25 0 1.5"/>
+      <geometry>
+        <box size="7.5 0.2 3"/>
+      </geometry>
+    </collision>
+
+    <collision>
       <origin xyz="0 0 2.5"/>
       <geometry>
         <box size="2 0.2 1"/>
@@ -82,27 +53,12 @@
     </collision>
 
     <inertial>
-      <origin xyz="0 0 2.5"/>
-      <mass value="5.0"/>
-      <inertia ixx="0.01" ixy="0" ixz="0"
-               iyy="0.01" iyz="0"
-               izz="0.01"/>
+      <origin xyz="0 0 1.5"/>
+      <mass value="45.0"/>
+      <inertia ixx="0.1" ixy="0" ixz="0"
+               iyy="0.1" iyz="0"
+               izz="0.1"/>
     </inertial>
   </link>
-
-  <joint name="joint_left" type="fixed">
-    <parent link="base_link"/>
-    <child link="left_wall"/>
-  </joint>
-
-  <joint name="joint_right" type="fixed">
-    <parent link="base_link"/>
-    <child link="right_wall"/>
-  </joint>
-
-  <joint name="joint_top_wall" type="fixed">
-    <parent link="base_link"/>
-    <child link="top_wall"/>
-  </joint>
 
 </robot>

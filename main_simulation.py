@@ -2,6 +2,7 @@ from qibullet import SimulationManager
 import time
 import pybullet as p
 import math
+import numpy as np
 
 import default_configuration_simulation
 import useful_functions
@@ -53,70 +54,37 @@ if __name__ == "__main__":
     p.loadURDF("simulation/objects/chair.urdf", [-1.75, 2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
     p.loadURDF("simulation/objects/chair.urdf", [-3.25, 2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
 
+    #test
+    test_id = p.createMultiBody(baseMass=60, baseCollisionShapeIndex=p.createCollisionShape(shapeType=p.GEOM_CYLINDER, radius=0.25, height=1.65), baseVisualShapeIndex=p.createVisualShape(shapeType=p.GEOM_CYLINDER, radius=0.25, length=1.65, rgbaColor=[1, 0, 0, 1]), basePosition=[3, 0, 0.825])
+
     print("World created")
 
     time.sleep(2)
 
     #Start simualtion
+
     #Wake up
     default_configuration_simulation.wake_up(pepper)
 
     #Welcome
-    #strsay = "Hello, welcome to CaféBot. I'm a Socially-Aware Assistant for coffee-shop service"
-    #default_configuration_simulation.welcome(pepper, strsay)
+    strsay = "Hello, welcome to CaféBot. I'm a Socially-Aware Assistant for coffee-shop service"
+    default_configuration_simulation.welcome(pepper, strsay)
 
     #Say
-    #strsay = "How can I help you?"
-    #say_simulation.say(pepper, strsay)
+    strsay = "How can I help you?"
+    say_simulation.say(pepper, strsay)
 
     #Move to goal with A* algorithm
-    ground_plane_id = useful_functions.getGroundPlane_id()
-    pepper_id = pepper.robot_model
-    grid_size = (16, 16)
+    p_goal = (1, 1)
+    motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
-    grid = motion_simulation.obstacles_grid(ground_plane_id, pepper_id, grid_size)
-    p = pepper.getPosition()
-
-    p_start = (p[0], p[1])
-    p_goal = (4.25, 4.25)
-
-    p_start_r = (round(p_start[0]), round(p_start[1]))
-    p_goal_r = (round(p_goal[0]), round(p_goal[1]))
-    print(f"Start position: {p_start_r} and goal position: {p_goal_r}")
-
-    path = motion_simulation.A_star_algorithm(p_start_r, p_goal_r, grid)
-
-    if path:
-        print(f"Path found: {path}")
-        motion_simulation.moveToGoal(pepper, path)
-
-        print(f"Goal reached: {p_goal_r}")
-        time.sleep(1)
-    else:
-        print("Path not found")
-
-    p = pepper.getPosition()
-
-    p_start = (p[0], p[1])
-    p_goal = (-7, -7)
-
-    p_start_r = (round(p_start[0]), round(p_start[1]))
-    p_goal_r = (round(p_goal[0]), round(p_goal[1]))
-    print(f"Start position: {p_start_r} and goal position: {p_goal_r}")
-
-    path = motion_simulation.A_star_algorithm(p_start_r, p_goal_r, grid)
-
-    if path:
-        print(f"Path found: {path}")
-        motion_simulation.moveToGoal(pepper, path)
-
-        print(f"Goal reached: {p_goal_r}")
-        time.sleep(1)
-    else:
-        print("Path not found")
+    p_goal = (-2.5, -1.75) #there is an obstacle here
+    motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
     #Rest
     default_configuration_simulation.reset_to_rest(pepper)
+
+    #Ended simulation
 
     print("Quit")
     simulation_manager.stopSimulation(client_id)
