@@ -88,4 +88,3 @@ if __name__ == "__main__":
 
     print("Quit")
     simulation_manager.stopSimulation(client_id)
-

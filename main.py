@@ -2,13 +2,14 @@
 
 import sys
 import os
-import default_configuration
-import motion
-import say
 import qi
 import argparse
 import time
 import math
+
+import default_configuration
+import motion
+import say
 
 def getenv(envstr, default = None):
     if envstr in os.environ:
@@ -23,7 +24,7 @@ def main():
                         help="Robot IP address.")
     parser.add_argument("--pport", type=int, default=getenv('PEPPER_PORT'),
                         help="Naoqi port number")
-    parser.add_argument("--sentence", type=str, default="Hello, welcome to CaféBot. I'm a Socially-Aware Assistant for coffee-shop service",
+    parser.add_argument("--sentence", type=str, default="Hello, welcome to CaféBot",
                         help="Sentence to say")
 
     args = parser.parse_args()
@@ -43,14 +44,40 @@ def main():
     session = app.session
 
     posture_service = session.service("ALRobotPosture")
-    motion_service = session.service("ALMotion")
     ans_service = session.service("ALAnimatedSpeech")
+    motion_service = session.service("ALMotion")
+    memory_service = session.service("ALMemory")
+    life_service = session.service("ALAutonomousLife")
 
+    life_service.setState("disabled")
+    motion_service.stiffnessInterpolation("Body", 1, 1)
+
+    time.sleep(2)
+
+    #Start
+
+    #Wake up
     default_configuration.wake_up(motion_service)
 
+    #Welcome
+    strsay = "Hello, welcome to CaféBot. I'm a Socially-Aware Assistant for coffee-shop service"
     default_configuration.welcome(posture_service, motion_service, ans_service, strsay)
-    
+
+    #Say
+    strsay = "How can I help you?"
+    say.say(ans_service, strsay)
+
+    #Move to goal
+    p_goal = (1, 1)
+    motion.moveToGoal(motion_service, memory_service, p_goal)
+
+    p_goal = (-2, -1)
+    motion.moveToGoal(motion_service, memory_service, p_goal)
+
+    #Rest
     default_configuration.reset_to_rest(motion_service)
+
+    #Ended
 
 if __name__ == "__main__":
     main()

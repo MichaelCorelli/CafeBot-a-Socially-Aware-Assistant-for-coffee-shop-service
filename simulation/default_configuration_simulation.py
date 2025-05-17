@@ -1,7 +1,4 @@
-from qibullet import SimulationManager
-import pybullet as p
 import time
-from threading import Thread
 
 import say_simulation
 

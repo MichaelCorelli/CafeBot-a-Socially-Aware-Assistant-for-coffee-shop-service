@@ -44,9 +44,9 @@ def obstacles_grid(ground_plane_id, pepper_id, grid_size, cell_size, ignored_ids
                 x_g, y_g = world_to_grid(x, y, grid_size, cell_size)
                 if 0 <= x_g < grid_size[0] and 0 <= y_g < grid_size[1]:
 
-                    for dx in [-1, 0, 1]:
-                        for dy in [-1, 0, 1]:
-                            x_g2, y_g2 = x_g + dx, y_g + dy
+                    for delta_x in [-1, 0, 1]:
+                        for delta_y in [-1, 0, 1]:
+                            x_g2, y_g2 = x_g + delta_x, y_g + delta_y
                             if 0 <= x_g2 < grid_size[0] and 0 <= y_g2 < grid_size[1]:
                                 grid[x_g2][y_g2] = 1
                 y += cell_size / 2
@@ -106,11 +106,11 @@ def checkObstacles(pepper, dist_threshold = 0.5):
     position, th = p.getBasePositionAndOrientation(pepper.robot_model)
     yaw = p.getEulerFromQuaternion(th)[2]
 
-    dx = math.cos(yaw)
-    dy = math.sin(yaw)
+    delta_x = math.cos(yaw)
+    delta_y = math.sin(yaw)
 
     from_position = position
-    to_position = (position[0] + dx * dist_threshold, position[1] + dy * dist_threshold, position[2])
+    to_position = (position[0] + delta_x * dist_threshold, position[1] + delta_y * dist_threshold, position[2])
 
     hit = p.rayTest(from_position, to_position)[0]
 
@@ -149,16 +149,16 @@ def move(pepper, path):
 
     return True
 
-def correction(pepper, goal, threshold=0.0001):
-    current_pos = pepper.getPosition()
-    dx = goal[0] - current_pos[0]
-    dy = goal[1] - current_pos[1]
-    dist = math.hypot(dx, dy)
+def correction(pepper, p_goal, threshold=0.0001):
+    position = pepper.getPosition()
+    delta_x = goal[0] - position[0]
+    delta_y = goal[1] - position[1]
+    dist = math.hypot(delta_x, delta_y)
 
     if dist > threshold:
-        print(f"Application of correction ({dist:.2f} m)")
+        print("Applying correction: distance = {dist:.3f}")
 
-        theta_new = math.atan2(dy, dx)
+        theta_new = math.atan2(delta_y, delta_x)
         _, th = p.getBasePositionAndOrientation(pepper.robot_model)
         theta = p.getEulerFromQuaternion(th)[2]
 

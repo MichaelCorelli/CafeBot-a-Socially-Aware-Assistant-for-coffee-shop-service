@@ -1,5 +1,7 @@
 import time
 
+import say
+
 def wake_up(motion_service):
 
     time.sleep(2)
@@ -26,11 +28,7 @@ def welcome(posture_service, motion_service, ans_service, strsay):
     motion_service.angleInterpolation(names, angles, times, isAbsolute)
 
     #Welcome say
-    time.sleep(1)
-    print("Say: start")
-    ans_service.say(strsay, {"bodyLanguageMode": "contextual"})
-    print("Say: ended")
-    time.sleep(1)
+    say.say(ans_service, strsay)
 
     #Welcome movement
     names = ["RShoulderPitch", "RShoulderRoll", "RElbowYaw", "RElbowRoll"]
@@ -50,13 +48,12 @@ def welcome(posture_service, motion_service, ans_service, strsay):
     posture_service.goToPosture("StandInit", 0.5)
 
     print("Welcome: ended")
-
     time.sleep(2)
 
 def reset_to_rest(motion_service):
 
+    time.sleep(2)
     print("Reset to rest position: start")
     motion_service.rest()
     print("Reset to rest position: ended")
-
     time.sleep(2)
