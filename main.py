@@ -10,6 +10,7 @@ import math
 import default_configuration
 import motion
 import say
+import dance
 
 def getenv(envstr, default = None):
     if envstr in os.environ:
@@ -73,6 +74,10 @@ def main():
 
     p_goal = (-2, -1)
     motion.moveToGoal(motion_service, memory_service, p_goal)
+
+    #Dance
+    strsay = "I dance"
+    dance.dance(posture_service, motion_service, ans_service, strsay)
 
     #Rest
     default_configuration.reset_to_rest(motion_service)

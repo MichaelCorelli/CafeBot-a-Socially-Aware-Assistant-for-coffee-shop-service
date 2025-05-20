@@ -8,6 +8,7 @@ import default_configuration_simulation
 import useful_functions
 import motion_simulation
 import say_simulation
+import dance
 
 if __name__ == "__main__":
     simulation_manager = SimulationManager()
@@ -93,6 +94,10 @@ if __name__ == "__main__":
 
     p_goal = (-2.5, -1.75) #there is an obstacle here
     motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
+
+    #Dance
+    strsay = "I'm dancing"
+    dance.dance(pepper, strsay)
 
     #Rest
     default_configuration_simulation.reset_to_rest(pepper)

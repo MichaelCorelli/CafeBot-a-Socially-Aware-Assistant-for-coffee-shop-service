@@ -36,6 +36,7 @@ def welcome(posture_service, motion_service, ans_service, strsay):
     angles_2 = [0.1, -0.4, 1.3, 1.5]
     times = [1] * len(names)
     isAbsolute = True
+    
     for _ in range(3):
         motion_service.angleInterpolation(names, angles_1, times, isAbsolute)
         time.sleep(0.5)
