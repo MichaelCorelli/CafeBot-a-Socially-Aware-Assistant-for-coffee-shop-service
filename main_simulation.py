@@ -27,32 +27,45 @@ if __name__ == "__main__":
     door_id = p.loadURDF("simulation/objects/door.urdf", [8, -0.5, 0])
     p.setJointMotorControl2(bodyUniqueId=door_id, jointIndex=0, controlMode=p.POSITION_CONTROL, targetPosition=0, force=10)
 
-    #tables
-    p.loadURDF("simulation/objects/table.urdf", [-2.5, -2.5, 0])
-    p.loadURDF("simulation/objects/table.urdf", [2.5, -2.5, 0])
-    p.loadURDF("simulation/objects/table.urdf", [2.5, 2.5, 0])
-    p.loadURDF("simulation/objects/table.urdf", [-2.5, 2.5, 0])
+    #counter
+    p.loadURDF("simulation/objects/counter.urdf", [-6, 0, 0])
 
-    #chairs
-    p.loadURDF("simulation/objects/chair.urdf", [-2.5, -1.75, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [-2.5, -3.25, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [-1.75, -2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [-3.25, -2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
+    #furniture
+    p.loadURDF("simulation/objects/furniture.urdf", [-7.5, -4, 0])
+    p.loadURDF("simulation/objects/furniture.urdf", [-7.5, 4, 0])
+    p.loadURDF("simulation/objects/furniture.urdf", [7.5, -4, 0])
+    p.loadURDF("simulation/objects/furniture.urdf", [7.5, 4, 0])
+    p.loadURDF("simulation/objects/furniture.urdf", basePosition=[-4, -7.5, 0], baseOrientation=p.getQuaternionFromEuler([0, 0, math.pi / 2]), useFixedBase=True)
+    p.loadURDF("simulation/objects/furniture.urdf", basePosition=[-4, 7.5, 0], baseOrientation=p.getQuaternionFromEuler([0, 0, math.pi / 2]), useFixedBase=True)
+    p.loadURDF("simulation/objects/furniture.urdf", basePosition=[4, -7.5, 0], baseOrientation=p.getQuaternionFromEuler([0, 0, math.pi / 2]), useFixedBase=True)
+    p.loadURDF("simulation/objects/furniture.urdf", basePosition=[4, 7.5, 0], baseOrientation=p.getQuaternionFromEuler([0, 0, math.pi / 2]), useFixedBase=True)
 
-    p.loadURDF("simulation/objects/chair.urdf", [2.5, -1.75, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [2.5, -3.25, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [1.75, -2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [3.25, -2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
+    #table
+    p.loadURDF("simulation/objects/table.urdf", [-3.5, -3.5, 0])
+    p.loadURDF("simulation/objects/table.urdf", [3.5, -3.5, 0])
+    p.loadURDF("simulation/objects/table.urdf", [3.5, 3.5, 0])
+    p.loadURDF("simulation/objects/table.urdf", [-3.5, 3.5, 0])
 
-    p.loadURDF("simulation/objects/chair.urdf", [2.5, 1.75, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [2.5, 3.25, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [1.75, 2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [3.25, 2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
+    #chair
+    p.loadURDF("simulation/objects/chair.urdf", [-3.5, -2.75, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [-3.5, -4.25, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [-2.75, -3.5, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [-4.25, -3.5, 0])
 
-    p.loadURDF("simulation/objects/chair.urdf", [-2.5, 1.75, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [-2.5, 3.25, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [-1.75, 2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
-    p.loadURDF("simulation/objects/chair.urdf", [-3.25, 2.5, 0], p.getQuaternionFromEuler([0, 0, 0]))
+    p.loadURDF("simulation/objects/chair.urdf", [3.5, -2.75, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [3.5, -4.25, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [2.75, -3.5, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [4.25, -3.5, 0])
+
+    p.loadURDF("simulation/objects/chair.urdf", [3.5, 2.75, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [3.5, 4.25, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [2.75, 3.5, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [4.25, 3.5, 0])
+
+    p.loadURDF("simulation/objects/chair.urdf", [-3.5, 2.75, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [-3.5, 4.25, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [-2.75, 3.5, 0])
+    p.loadURDF("simulation/objects/chair.urdf", [-4.25, 3.5, 0])
 
     #test
     test_id = p.createMultiBody(baseMass=60, baseCollisionShapeIndex=p.createCollisionShape(shapeType=p.GEOM_CYLINDER, radius=0.25, height=1.65), baseVisualShapeIndex=p.createVisualShape(shapeType=p.GEOM_CYLINDER, radius=0.25, length=1.65, rgbaColor=[1, 0, 0, 1]), basePosition=[3, 0, 0.825])

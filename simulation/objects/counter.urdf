@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot name="counter">
+
+  <material name="brown" >
+    <color rgba="0.396078431372549 0.21568627450980393 0 1" />
+  </material>
+
+  <link name="top">
+    <visual>
+      <origin xyz="0 0 0.6"/>
+      <geometry>
+        <box size="1 2 0.05"/>
+      </geometry>
+      <material name="brown"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0.6"/>
+      <geometry>
+        <box size="1 2 0.05"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0"
+               iyy="0.01" iyz="0"
+               izz="0.01"/>
+    </inertial>
+  </link>
+
+  <link name="center">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.9 1.8 0.6"/>
+      </geometry>
+      <material name="brown"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.9 1.8 0.6"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="5.0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0"
+               iyy="0.01" iyz="0"
+               izz="0.005"/>
+    </inertial>
+  </link>
+
+  <joint name="top_to_center" type="fixed">
+    <parent link="top"/>
+    <child link="center"/>
+    <origin xyz="0 0 0.3" rpy="0 0 0"/>
+  </joint>
+
+</robot>
