@@ -108,7 +108,7 @@ sonarValueList = [
     "Device/SubDeviceList/Platform/Back/Sonar/Sensor/Value"
 ]
 
-def checkObstaclesSonar(memory_service, threshold=0.3):
+def checkObstaclesSonar(memory_service, threshold=1.3):
     try:
         sonar_val = [memory_service.getData(sonar) for sonar in sonarValueList]
         print("Sonar: [%s]" % ", ".join(["%.2f" % val for val in sonar_val]))
@@ -117,7 +117,7 @@ def checkObstaclesSonar(memory_service, threshold=0.3):
         print("Error in checkObstaclesSonar:" % e)
         return False
 
-def checkObstaclesLaser(memory_service, threshold=0.3):
+def checkObstaclesLaser(memory_service, threshold=1.3):
     try:
         index = [
             laserValueList.index("Device/SubDeviceList/Platform/LaserSensor/Front/Horizontal/Seg07/X/Sensor/Value"),

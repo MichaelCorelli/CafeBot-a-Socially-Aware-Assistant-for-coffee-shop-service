@@ -8,7 +8,7 @@ import default_configuration_simulation
 import useful_functions
 import motion_simulation
 import say_simulation
-import dance
+import dance_simulation
 
 if __name__ == "__main__":
     simulation_manager = SimulationManager()
@@ -89,15 +89,15 @@ if __name__ == "__main__":
     say_simulation.say(pepper, strsay)
 
     #Move to goal with A* algorithm
-    p_goal = (1, 1)
+    p_goal = (2.25, 2.25)
     motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
-    p_goal = (-2.5, -1.75) #there is an obstacle here
+    p_goal = (3, 0) #the test is here
     motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
     #Dance
     strsay = "I'm dancing"
-    dance.dance(pepper, strsay)
+    dance_simulation.dance(pepper, strsay)
 
     #Rest
     default_configuration_simulation.reset_to_rest(pepper)

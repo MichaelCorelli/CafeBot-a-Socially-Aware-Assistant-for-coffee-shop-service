@@ -101,7 +101,7 @@ def A_star_algorithm(p_start_g, p_goal_g, grid):
 
     return None
 
-def checkObstacles(pepper, dist_threshold = 0.5):
+def checkObstacles(pepper, dist_threshold = 1.3):
 
     position, th = p.getBasePositionAndOrientation(pepper.robot_model)
     yaw = p.getEulerFromQuaternion(th)[2]
@@ -151,8 +151,8 @@ def move(pepper, path):
 
 def correction(pepper, p_goal, threshold=0.0001):
     position = pepper.getPosition()
-    delta_x = goal[0] - position[0]
-    delta_y = goal[1] - position[1]
+    delta_x = p_goal[0] - position[0]
+    delta_y = p_goal[1] - position[1]
     dist = math.hypot(delta_x, delta_y)
 
     if dist > threshold:
