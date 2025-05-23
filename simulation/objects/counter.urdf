@@ -2,7 +2,7 @@
 <robot name="counter">
 
   <material name="brown" >
-    <color rgba="0.396078431372549 0.21568627450980393 0 1" />
+    <color rgba="0.4 0.25 0.07 1" />
   </material>
 
   <link name="top">

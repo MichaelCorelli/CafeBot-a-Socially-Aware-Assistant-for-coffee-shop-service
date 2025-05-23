@@ -68,6 +68,54 @@ if __name__ == "__main__":
     p.loadURDF("simulation/objects/chair.urdf", [-2.75, 3.5, 0])
     p.loadURDF("simulation/objects/chair.urdf", [-4.25, 3.5, 0])
 
+    #water bottle
+    p.loadURDF("simulation/objects/water_bottle.urdf", [-3.45, -3.55, 0.66])
+    p.loadURDF("simulation/objects/water_bottle.urdf", [3.45, -3.55, 0.66])
+    p.loadURDF("simulation/objects/water_bottle.urdf", [3.45, 3.55, 0.66])
+    p.loadURDF("simulation/objects/water_bottle.urdf", [-3.45, 3.55, 0.66])
+
+    #orange juice
+    p.loadURDF("simulation/objects/orange_juice.urdf", [-3.55, -3.45, 0.66])
+    p.loadURDF("simulation/objects/orange_juice.urdf", [3.55, -3.45, 0.66])
+    p.loadURDF("simulation/objects/orange_juice.urdf", [3.55, 3.45, 0.66])
+    p.loadURDF("simulation/objects/orange_juice.urdf", [-3.55, 3.45, 0.66])
+
+    #cappuccino
+    p.loadURDF("simulation/objects/cappuccino.urdf", [-3.2, -3.45, 0.66])
+    p.loadURDF("simulation/objects/cappuccino.urdf", [3.2, -3.45, 0.66])
+    p.loadURDF("simulation/objects/cappuccino.urdf", [3.2, 3.45, 0.66])
+    p.loadURDF("simulation/objects/cappuccino.urdf", [-3.2, 3.45, 0.66])
+
+    #espresso
+    p.loadURDF("simulation/objects/espresso.urdf", [-3.45, -3.2, 0.66])
+    p.loadURDF("simulation/objects/espresso.urdf", [3.45, -3.2, 0.66])
+    p.loadURDF("simulation/objects/espresso.urdf", [3.45, 3.2, 0.66])
+    p.loadURDF("simulation/objects/espresso.urdf", [-3.45, 3.2, 0.66])
+
+    #cornetto
+    p.loadURDF("simulation/objects/cornetto.urdf", [-3.25, -3.25, 0.66])
+    p.loadURDF("simulation/objects/cornetto.urdf", [3.25, -3.25, 0.66])
+    p.loadURDF("simulation/objects/cornetto.urdf", [3.25, 3.25, 0.66])
+    p.loadURDF("simulation/objects/cornetto.urdf", [-3.25, 3.25, 0.66])
+
+    #tea
+    p.loadURDF("simulation/objects/tea.urdf", [-3.8, -3.5, 0.66])
+    p.loadURDF("simulation/objects/tea.urdf", [3.8, -3.5, 0.66])
+    p.loadURDF("simulation/objects/tea.urdf", [3.8, 3.5, 0.66])
+    p.loadURDF("simulation/objects/tea.urdf", [-3.8, 3.5, 0.66])
+
+    #muffin
+    p.loadURDF("simulation/objects/muffin.urdf", [-3.5, -3.8, 0.66])
+    p.loadURDF("simulation/objects/muffin.urdf", [3.5, -3.8, 0.66])
+    p.loadURDF("simulation/objects/muffin.urdf", [3.5, 3.8, 0.66])
+    p.loadURDF("simulation/objects/muffin.urdf", [-3.5, 3.8, 0.66])
+
+    #sandwich
+    p.loadURDF("simulation/objects/sandwich.urdf", [-3.75, -3.75, 0.66])
+    p.loadURDF("simulation/objects/sandwich.urdf", [3.75, -3.75, 0.66])
+    p.loadURDF("simulation/objects/sandwich.urdf", [3.75, 3.75, 0.66])
+    p.loadURDF("simulation/objects/sandwich.urdf", [-3.75, 3.75, 0.66])
+
     #test
     test_id = p.createMultiBody(baseMass=60, baseCollisionShapeIndex=p.createCollisionShape(shapeType=p.GEOM_CYLINDER, radius=0.25, height=1.65), baseVisualShapeIndex=p.createVisualShape(shapeType=p.GEOM_CYLINDER, radius=0.25, length=1.65, rgbaColor=[1, 0, 0, 1]), basePosition=[3, 0, 0.825])
 
