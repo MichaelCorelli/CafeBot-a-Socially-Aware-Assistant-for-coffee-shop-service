@@ -116,8 +116,7 @@ def checkObstacles(pepper, dist_threshold = 1.3):
 
     return hit[0] != -1 and hit[2] < 1
 
-
-def move(pepper, path):
+def move(pepper, path, pepper_positions=None, path_positions=None, errors=None):
     
     _, th = p.getBasePositionAndOrientation(pepper.robot_model)
     theta = p.getEulerFromQuaternion(th)[2]
@@ -147,16 +146,23 @@ def move(pepper, path):
         pepper.moveTo(dist, 0, 0)
         time.sleep(0.5)
 
+        if pepper_positions is not None and path_positions is not None and errors is not None:
+            pos = pepper.getPosition()
+            pepper_positions.append((pos[0], pos[1]))
+            path_positions.append((x_new, y_new))
+            error = math.hypot(x_new - pos[0], y_new - pos[1])
+            errors.append(error)
+
     return True
 
-def correction(pepper, p_goal, threshold=0.0001):
+def correction(pepper, p_goal, threshold=0.0001, pepper_positions=None, path_positions=None, errors=None):
     position = pepper.getPosition()
     delta_x = p_goal[0] - position[0]
     delta_y = p_goal[1] - position[1]
     dist = math.hypot(delta_x, delta_y)
 
     if dist > threshold:
-        print("Applying correction: distance = {dist:.3f}")
+        print(f"Applying correction: distance = {dist:.3f}")
 
         theta_new = math.atan2(delta_y, delta_x)
         _, th = p.getBasePositionAndOrientation(pepper.robot_model)
@@ -171,10 +177,17 @@ def correction(pepper, p_goal, threshold=0.0001):
 
         pepper.moveTo(dist, 0, 0)
         time.sleep(0.5)
+
+        if pepper_positions is not None and path_positions is not None and errors is not None:
+            pos = pepper.getPosition()
+            pepper_positions.append((pos[0], pos[1]))
+            path_positions.append((p_goal[0], p_goal[1]))
+            error = math.hypot(p_goal[0] - pos[0], p_goal[1] - pos[1])
+            errors.append(error)
+
         print("Correct Pepper goal position reaches")
 
 def moveToGoal(pepper, p_goal, ignored_ids):
-
     ground_plane_id = useful_functions.getGroundPlane_id()
     pepper_id = pepper.robot_model
     grid_size = (64, 64)
@@ -183,16 +196,11 @@ def moveToGoal(pepper, p_goal, ignored_ids):
     grid = obstacles_grid(ground_plane_id, pepper_id, grid_size, cell_size, ignored_ids)
 
     position = pepper.getPosition()
-
     p_start = (useful_functions.round_cell_size(position[0]), useful_functions.round_cell_size(position[1]))
-
     p_start_g = world_to_grid(p_start[0], p_start[1], grid_size, cell_size)
     p_goal_g = world_to_grid(p_goal[0], p_goal[1], grid_size, cell_size)
 
     useful_functions.print_grid_created(grid, p_start_g, p_goal_g)
-
-    p_start_w = grid_to_world(p_start_g[0], p_start_g[1], grid_size, cell_size)
-    p_goal_w = grid_to_world(p_goal_g[0], p_goal_g[1], grid_size, cell_size)
 
     print(f"Start position: {p_start} and goal position: {p_goal}")
 
@@ -200,23 +208,30 @@ def moveToGoal(pepper, p_goal, ignored_ids):
 
     if path_grid:
         path_world = [grid_to_world(x_g, y_g, grid_size, cell_size) for (x_g, y_g) in path_grid]
-
         print(f"Path found: {path_world}")
 
-        if move(pepper, path_world):
+        pepper_positions = []
+        path_positions = []
+        errors = []
 
-            print(pepper.getPosition())
+        if move(pepper, path_world, pepper_positions, path_positions, errors):
+            print("Position before correction:", pepper.getPosition())
             time.sleep(2)
 
-            correction(pepper, p_goal)
+            correction(pepper, p_goal, pepper_positions=pepper_positions, path_positions=path_positions, errors=errors)
 
+            print("Position after correction:", pepper.getPosition())
             print(f"Goal reached: {p_goal}")
-            print("Pepper position:", pepper.getPosition())
 
-        print("Pepper position:", pepper.getPosition())
+            if errors:
+                print("Movement task plot")
+                path_x, path_y = zip(*path_positions)
+                pepper_x, pepper_y = zip(*pepper_positions)
 
+                useful_functions.motion_plot(path_x, path_y, pepper_x, pepper_y, errors)
 
-        time.sleep(2)
+        else:
+            print("Ended of movement, because Robot detected obstacoles")
 
     else:
         print("Path not found")
