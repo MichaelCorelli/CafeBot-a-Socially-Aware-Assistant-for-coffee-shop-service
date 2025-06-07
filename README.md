@@ -49,4 +49,4 @@ CafeBot-a-Socially-Aware-Assistant-for-coffee-shop-service/
   - Michael Corelli | [corelli.1938627@studenti.uniroma1.it](mailto:corelli.1938627@studenti.uniroma1.it)
   - Gianmarco Donnesi | [donnesi.2152311@studenti.uniroma1.it](mailto:donnesi.2152311@studenti.uniroma1.it)  
 
-- **License**: this project is licensed under the [GPL-3.0 License](LICENSE). See the file for more details.
+- **License**: this project is licensed under the [Apache License 2.0](LICENSE). See the file for more details.
