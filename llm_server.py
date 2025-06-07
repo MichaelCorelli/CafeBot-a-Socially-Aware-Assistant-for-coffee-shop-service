@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import openai
 import faiss
 import numpy as np
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import logging
 from typing import Literal, Optional, Dict, Any
@@ -20,7 +20,7 @@ if not OPENAI_API_KEY:
 
 openai.api_key = OPENAI_API_KEY
 
-CAFEEBOT_SYSTEM_PROMPT = (
+SYSTEM_PROMPT = (
     "You are CaféBot, an advanced, multilingual service robot in an Italian coffee shop. "
     "Your primary goal is to provide efficient and appropriate assistance. "
     "You interact with three distinct user types: Customers, Workers, and Supervisors. "
@@ -172,7 +172,7 @@ async def chat(u: Utterance):
     user_message_content += f"User query: {u.text}"
 
     messages = [
-        {"role": "system", "content": COMBINED_SYSTEM_PROMPT},
+        {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "system", "content": f"Retrieved Context (use if relevant):\n{context}"},
         {"role": "user", "content": user_message_content}
     ]
