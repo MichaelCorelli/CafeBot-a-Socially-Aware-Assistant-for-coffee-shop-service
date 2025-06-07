@@ -1,11 +1,11 @@
 # CafèBot-a-Socially-Aware-Assistant-for-coffee-shop-service
 This repository contains the source code for CaféBot, an autonomous, socially-aware robotic platform designed to augment service quality and operational efficiency in a coffee-shop environment. Built on the Pepper humanoid robot, CaféBot delivers personalized assistance to customers, staff and supervisors by combining:
 
-- Advanced Natural Language Processing powered by Large Language Models for adaptive, role-based dialogue management.
-- Semantic Environmental Mapping enabling robust spatial reasoning and precise product lookup.
-- Multimodal Interaction (vocal, gestural, and tablet GUI) with dynamic adaptation based on user role and real-time cognitive load.
-- Human-Aware Navigation using an A*-derived planner with dynamic collision avoidance that differentiates between static obstacles and moving humans.
-- Vision-Based Perception (YOLO object detection) to recognize user-presented products and retrieve details such as pricing, location, and qualitative attributes.
+- **Advanced Natural Language Processing** powered by Large Language Models for adaptive, role-based dialogue management.
+- **Semantic Environmental Mapping** for spatial reasoning and precise product lookup.
+- **Multimodal Interaction** (vocal, gestural, and tablet GUI) with dynamic adaptation based on user role and real-time cognitive load.
+- **Human-Aware Navigation** using an A*-derived planner with dynamic collision avoidance that differentiates between static obstacles and moving humans.
+- **Vision-Based Perception** (YOLO object detection) to recognize user-presented products and retrieve details such as pricing, location, and qualitative attributes.
 
 --- 
 
@@ -39,7 +39,6 @@ CafeBot-a-Socially-Aware-Assistant-for-coffee-shop-service/
 │
 ├── menu.json                    # Product knowledge base for the coffee shop
 ├── requirements.txt             # Project's Python dependencies
-├── EAI_HRIRBC.pdf               # The project's research paper
 └── README.md                    # This file
 ```
 
