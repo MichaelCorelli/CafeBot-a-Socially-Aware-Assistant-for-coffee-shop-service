@@ -41,7 +41,12 @@ CafeBot-a-Socially-Aware-Assistant-for-coffee-shop-service/
 ├── requirements.txt             # Project's Python dependencies
 └── README.md                    # This file
 ```
+---
 
-### Reference:
-- Naoqi: http://doc.aldebaran.com/2-5/index_dev_guide.html
-- A*: https://github.com/jacobsayono/a-star-algorithm/blob/main/a_star.ipynb
+## **Authors and License**
+
+- **Authors**:  
+  - Michael Corelli | [corelli.1938627@studenti.uniroma1.it](mailto:corelli.1938627@studenti.uniroma1.it)
+  - Gianmarco Donnesi | [donnesi.2152311@studenti.uniroma1.it](mailto:donnesi.2152311@studenti.uniroma1.it)  
+
+- **License**: this project is licensed under the [GPL-3.0 License](LICENSE). See the file for more details.
