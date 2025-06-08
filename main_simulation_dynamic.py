@@ -4,9 +4,7 @@ import pybullet as p
 import math
 import numpy as np
 import json
-from simulation import default_configuration_simulation, 
-                       motion_simulation, say_simulation, 
-                       dance_simulation, perception, simulation_llm_bridge, live_speech
+from simulation import default_configuration_simulation, motion_simulation, say_simulation, dance_simulation, perception, simulation_llm_bridge, live_speech
 
 dynamic_semantic_map = []
 WAKE_WORD = "pepper"

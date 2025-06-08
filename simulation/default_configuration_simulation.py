@@ -1,6 +1,6 @@
 import time
 
-import say_simulation
+from . import say_simulation
 
 def wake_up(pepper):
 

@@ -18,7 +18,7 @@ LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o")
 if not OPENAI_API_KEY:
     raise RuntimeError("OPENAI_API_KEY is not set. Check your .env file.")
 
-openai.api_key = OPENAI_API_KEY
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 SYSTEM_PROMPT = (
     "You are CaféBot, an advanced, multilingual service robot in an Italian coffee shop. "
@@ -115,7 +115,7 @@ try:
 
     if docs:
         print("Generating embeddings for knowledge base…")
-        emb_res = openai.Embeddings.create(input=docs, model=EMB_MODEL)
+        emb_res = client.embeddings.create(input=docs, model=EMB_MODEL)
         embs = [d.embedding for d in emb_res.data]
         dims = len(embs[0])
         index = faiss.IndexFlatL2(dims)
@@ -158,7 +158,7 @@ async def chat(u: Utterance):
     context = ""
     if index and docs:
         try:
-            q_res = openai.Embeddings.create(input=[u.text], model=EMB_MODEL)
+            q_res = client.embeddings.create(input=[u.text], model=EMB_MODEL)
             q_emb = q_res.data[0].embedding
             k = min(3, len(docs))
             _, I = index.search(np.array([q_emb], dtype="float32"), k)
@@ -179,14 +179,14 @@ async def chat(u: Utterance):
 
     try:
         logging.info(f"Sending to LLM. Messages: {json.dumps(messages, indent=2)}")
-        resp = openai.ChatCompletion.create(
+        resp = client.chat.completions.create(
             model=LLM_MODEL,
             messages=messages,
             temperature=0.1,
-            max_tokens=300
-            # response_format={ "type": "json_object" } # Da usare con modelli che lo supportano esplicitamente
+            max_tokens=300,
+            response_format={ "type": "json_object" }
         )
-        raw_llm_output = resp.choices[0].message.get("content", "{}").strip()
+        raw_llm_output = resp.choices[0].message.content
         logging.info(f"Raw LLM output: {raw_llm_output}")
 
         try:

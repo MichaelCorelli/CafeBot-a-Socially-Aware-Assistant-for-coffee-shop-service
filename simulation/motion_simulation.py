@@ -3,7 +3,7 @@ import heapq
 import math
 import time
 
-import useful_functions
+from . import useful_functions
 
 def world_to_grid(x, y, grid_size, cell_size):
     x_offset = grid_size[0] // 2
