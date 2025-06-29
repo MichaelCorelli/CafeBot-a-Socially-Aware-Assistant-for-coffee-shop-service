@@ -101,8 +101,7 @@ def A_star_algorithm(p_start_g, p_goal_g, grid):
 
     return None
 
-def checkObstacles(pepper, dist_threshold = 1.3):
-
+def checkObstacles(pepper, dist_threshold=1.3):
     position, th = p.getBasePositionAndOrientation(pepper.robot_model)
     yaw = p.getEulerFromQuaternion(th)[2]
 
@@ -114,7 +113,14 @@ def checkObstacles(pepper, dist_threshold = 1.3):
 
     hit = p.rayTest(from_position, to_position)[0]
 
+    if hit[0] != -1:
+        distance = hit[2] * dist_threshold
+        print(f"Obstacle distance from robot: {distance:.3f} m")
+    else:
+        print("No obestcles detected")
+
     return hit[0] != -1 and hit[2] < 1
+
 
 def move(pepper, path, pepper_positions=None, path_positions=None, errors=None):
     
@@ -214,6 +220,12 @@ def moveToGoal(pepper, p_goal, ignored_ids):
         path_positions = []
         errors = []
 
+        initial_pos = pepper.getPosition()
+        pepper_positions.append((initial_pos[0], initial_pos[1]))
+        path_positions.append(path_world[0])
+        initial_error = math.hypot(path_world[0][0] - initial_pos[0], path_world[0][1] - initial_pos[1])
+        errors.append(initial_error)
+
         start_time = time.time()
 
         if move(pepper, path_world, pepper_positions, path_positions, errors):
@@ -243,10 +255,10 @@ def moveToGoal(pepper, p_goal, ignored_ids):
         print("Path not found")
 
 def moveToGoal_classic(pepper, p_goal):
-    position = pepper.getPosition()
-    
-    delta_x = p_goal[0] - position[0]
-    delta_y = p_goal[1] - position[1]
+    start_pos = pepper.getPosition()
+
+    delta_x = p_goal[0] - start_pos[0]
+    delta_y = p_goal[1] - start_pos[1]
     dist = math.hypot(delta_x, delta_y)
     theta_goal = math.atan2(delta_y, delta_x)
     
@@ -260,9 +272,13 @@ def moveToGoal_classic(pepper, p_goal):
     path_positions = []
     errors = []
 
-    pepper_positions.append((position[0], position[1]))
+    path_positions.append((start_pos[0], start_pos[1]))
     path_positions.append((p_goal[0], p_goal[1]))
-    errors.append(math.hypot(p_goal[0] - position[0], p_goal[1] - position[1]))
+
+    pepper_positions.append((start_pos[0], start_pos[1]))
+
+    errors.append(0.0)
+
     start_time = time.time()
 
     if abs(delta_theta) > 1e-2:
@@ -272,16 +288,17 @@ def moveToGoal_classic(pepper, p_goal):
     pepper.moveTo(dist, 0, 0)
     time.sleep(0.5)
 
+    final_pos = pepper.getPosition()
+    pepper_positions.append((final_pos[0], final_pos[1]))
+
+    final_error = math.hypot(p_goal[0] - final_pos[0], p_goal[1] - final_pos[1])
+    errors.append(final_error)
+
     end_time = time.time()
     delta_time = end_time - start_time
 
-    final_pos = pepper.getPosition()
-    error = math.hypot(p_goal[0] - final_pos[0], p_goal[1] - final_pos[1])
-    pepper_positions.append((final_pos[0], final_pos[1]))
-    errors.append(error)
-
     print(f"Position without correction: {final_pos}")
-    print(f"Error from goal: {error:.4f} m")
+    print(f"Error from goal: {final_error:.4f} m")
     print(f"Time spent for the movement: {delta_time:.2f} s")
 
     path_x, path_y = zip(*path_positions)
