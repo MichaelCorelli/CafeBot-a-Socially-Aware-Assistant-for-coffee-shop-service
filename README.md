@@ -43,6 +43,69 @@ CafeBot-a-Socially-Aware-Assistant-for-coffee-shop-service/
 ```
 ---
 
+## Setup and Installation
+Follow these steps to set up the development environment.
+
+1. Clone the Repository
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd CafeBot-a-Socially-Aware-Assistant-for-coffee-shop-service
+```
+
+2. Create a Virtual Environment
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+```
+
+3. Install Dependencies
+The project requires the libraries listed in requirements.txt. For a successful installation of PyAudio, you may need to install portaudio on your system (sudo apt-get install portaudio19-dev on Debian/Ubuntu, brew install portaudio on macOS).
+```bash
+pip install -r requirements.txt
+```
+
+4. Configure API Keys
+Create a file named `.env` in the project's root directory. This file will hold your OpenAI API key.
+```bash
+OPENAI_API_KEY="sk-xx...xx"
+```
+
+The `llm_server.py` script will automatically load this key.
+
+---
+
+## How to Run the Project
+The system requires two separate components to be running: the LLM Server and the Simulation Client.
+
+**1. Start the LLM Server**
+
+Open a terminal, activate the virtual environment, and start the FastAPI server.
+```bash
+uvicorn llm_server:app --reload
+```
+The server will be listening at `http://localhost:8000`. Leave this terminal running.
+
+**2. Run the Dynamic Simulation**
+
+This is the main mode that demonstrates all the robot's capabilities. Open a second terminal, activate the virtual environment, and launch the main_simulation_dynamic.py script.
+```bash
+python main_simulation_dynamic.py
+```
+
+**3. Run on the Real Robot**
+
+To run the code on a physical Pepper robot, ensure you are connected to the same network.
+
+Make sure the LLM Server is running (see step 1).
+
+Launch the main.py script, providing the robot's IP address.
+```bash
+python main.py --pip <YOUR_PEPPER_IP>
+```
+This script will execute a pre-defined sequence of actions (wake_up, welcome, moveToGoal, dance, rest) using the modules in the `/src` directory. For a full LLM-based interaction, the `pepper_llm_bridge.py` script contains the necessary logic.
+
+---
+
 ## **Authors and License**
 
 - **Authors**:  
