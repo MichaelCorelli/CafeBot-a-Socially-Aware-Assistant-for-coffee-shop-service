@@ -4,11 +4,11 @@ import pybullet as p
 import math
 import numpy as np
 
-import default_configuration_simulation
-import useful_functions
-import motion_simulation
-import say_simulation
-import dance_simulation
+from simulation import default_configuration_simulation
+from simulation import useful_functions
+from simulation import motion_simulation
+from simulation import say_simulation
+from simulation import dance_simulation
 
 if __name__ == "__main__":
     simulation_manager = SimulationManager()
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     say_simulation.say(pepper, strsay)
 
     #Move to goal with A* algorithm
-    p_goal = (2.25, 2.25)
+    p_goal = (2, 2)
     motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
     p_goal = (3, 0) #the test is here

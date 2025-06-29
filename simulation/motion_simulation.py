@@ -214,6 +214,8 @@ def moveToGoal(pepper, p_goal, ignored_ids):
         path_positions = []
         errors = []
 
+        start_time = time.time()
+
         if move(pepper, path_world, pepper_positions, path_positions, errors):
             print("Position before correction:", pepper.getPosition())
             time.sleep(2)
@@ -223,15 +225,65 @@ def moveToGoal(pepper, p_goal, ignored_ids):
             print("Position after correction:", pepper.getPosition())
             print(f"Goal reached: {p_goal}")
 
-            if errors:
-                print("Movement task plot")
-                path_x, path_y = zip(*path_positions)
-                pepper_x, pepper_y = zip(*pepper_positions)
-
-                useful_functions.motion_plot(path_x, path_y, pepper_x, pepper_y, errors)
-
         else:
             print("Ended of movement, because Robot detected obstacoles")
 
+        end_time = time.time()
+        delta_time = end_time - start_time
+        print(f"Time spent for the movement: {delta_time:.2f} s")
+
+        if errors:
+            print("Movement task plot")
+            path_x, path_y = zip(*path_positions)
+            pepper_x, pepper_y = zip(*pepper_positions)
+
+            useful_functions.motion_plot(path_x, path_y, pepper_x, pepper_y, errors)
+
     else:
         print("Path not found")
+
+def moveToGoal_classic(pepper, p_goal):
+    position = pepper.getPosition()
+    
+    delta_x = p_goal[0] - position[0]
+    delta_y = p_goal[1] - position[1]
+    dist = math.hypot(delta_x, delta_y)
+    theta_goal = math.atan2(delta_y, delta_x)
+    
+    _, orientation = p.getBasePositionAndOrientation(pepper.robot_model)
+    yaw = p.getEulerFromQuaternion(orientation)[2]
+
+    delta_theta = theta_goal - yaw
+    delta_theta = (delta_theta + math.pi) % (2 * math.pi) - math.pi
+
+    pepper_positions = []
+    path_positions = []
+    errors = []
+
+    pepper_positions.append((position[0], position[1]))
+    path_positions.append((p_goal[0], p_goal[1]))
+    errors.append(math.hypot(p_goal[0] - position[0], p_goal[1] - position[1]))
+    start_time = time.time()
+
+    if abs(delta_theta) > 1e-2:
+        pepper.moveTo(0, 0, delta_theta)
+        time.sleep(0.3)
+
+    pepper.moveTo(dist, 0, 0)
+    time.sleep(0.5)
+
+    end_time = time.time()
+    delta_time = end_time - start_time
+
+    final_pos = pepper.getPosition()
+    error = math.hypot(p_goal[0] - final_pos[0], p_goal[1] - final_pos[1])
+    pepper_positions.append((final_pos[0], final_pos[1]))
+    errors.append(error)
+
+    print(f"Position without correction: {final_pos}")
+    print(f"Error from goal: {error:.4f} m")
+    print(f"Time spent for the movement: {delta_time:.2f} s")
+
+    path_x, path_y = zip(*path_positions)
+    pepper_x, pepper_y = zip(*pepper_positions)
+    useful_functions.motion_plot(path_x, path_y, pepper_x, pepper_y, errors)
