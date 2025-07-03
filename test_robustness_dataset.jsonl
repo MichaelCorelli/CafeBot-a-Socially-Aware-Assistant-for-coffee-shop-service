@@ -1,0 +1,20 @@
+{"query": "I want a drink", "category": "Ambiguous Intent"}
+{"query": "Where is the food?", "category": "Ambiguous Intent"}
+{"query": "Can you show me something sweet?", "category": "Ambiguous Intent"}
+{"query": "Give me that thing.", "category": "Ambiguous Intent"}
+{"query": "I need some information.", "category": "Ambiguous Intent"}
+{"query": "Is there anything without milk?", "category": "Ambiguous Intent"}
+{"query": "Take me to the main area.", "category": "Ambiguous Intent"}
+{"query": "What else do you have?", "category": "Ambiguous Intent"}
+{"query": "What's the weather like?", "category": "Out-of-Scope (OoS) Requests"}
+{"query": "Tell me a joke.", "category": "Out-of-Scope (OoS) Requests"}
+{"query": "What time is it?", "category": "Out-of-Scope (OoS) Requests"}
+{"query": "Who is the president?", "category": "Out-of-Scope (OoS) Requests"}
+{"query": "Can you sing a song?", "category": "Out-of-Scope (OoS) Requests"}
+{"query": "Do you like music?", "category": "Out-of-Scope (OoS) Requests"}
+{"query": "Set a timer for 5 minutes.", "category": "Out-of-Scope (OoS) Requests"}
+{"query": "How much for a captain chino?", "category": "Simulated ASR Failure"}
+{"query": "Can you dance to me?", "category": "Simulated ASR Failure"}
+{"query": "Show me the tee.", "category": "Simulated ASR Failure"}
+{"query": "Do you have any cornet?", "category": "Simulated ASR Failure"}
+{"query": "What's in the sand witch?", "category": "Simulated ASR Failure"}
