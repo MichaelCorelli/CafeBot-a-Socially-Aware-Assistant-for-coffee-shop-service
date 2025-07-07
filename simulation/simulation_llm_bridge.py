@@ -1,23 +1,28 @@
 import requests
 import json
-import numpy as np
-from simulation import say_simulation, motion_simulation
+from simulation import say_simulation
+from motion_simulation_dynamic import moveToGoalDynamic
+from perception import PerceptionModule
 
 LLM_SERVER_URL = "http://localhost:8000/chat"
-
 
 session_state = {
     "current_role": "unknown",
     "session_status": "first_interaction"
 }
 
+_perceptor = PerceptionModule()
+
 def reset_session():
-    print("[Bridge] Session reset. Waiting for a new first interaction.")
+
+    print("[Bridge] Session reset.")
     session_state["current_role"] = "unknown"
     session_state["session_status"] = "first_interaction"
 
 def process_user_command(text_command):
-    print(f"\n[Bridge] Sending command to LLM: '{text_command}' (State: {session_state['session_status']}, Role: {session_state['current_role']})")
+
+    print(f"[Bridge] → LLM: '{text_command}' "
+          f"({session_state['session_status']}, {session_state['current_role']})")
     payload = {
         "text": text_command,
         "session_status": session_state["session_status"],
@@ -26,55 +31,81 @@ def process_user_command(text_command):
     try:
         response = requests.post(LLM_SERVER_URL, json=payload, timeout=20.0)
         response.raise_for_status()
-        llm_data = response.json()
-        session_state["current_role"] = llm_data.get("determined_role", "customer")
+        data = response.json()
+        session_state["current_role"] = data.get("determined_role", "customer")
         session_state["session_status"] = "ongoing_interaction"
-        print(f"[Bridge] Response received from LLM: {llm_data}")
-        return llm_data
-    except requests.exceptions.RequestException as e:
-        print(f"[Bridge] ERROR: Could not communicate with LLM server. {e}")
+        print(f"[Bridge] ← LLM: {data}")
+        return data
+    except requests.RequestException as e:
+        print(f"[Bridge] ERROR contacting LLM: {e}")
         return None
 
-def handle_llm_response(pepper, response_data, dynamic_map, menu_data, ignored_ids=[]):
+def handle_llm_response(pepper, response_data, menu_data):
+    
+    _perceptor.update_semantic_map(pepper)
+
     if not response_data:
-        say_simulation.say(pepper, "Sorry, I'm having trouble connecting to my decision-making circuits.")
+        say_simulation.say(pepper,
+            "Sorry, I'm having trouble connecting to my decision circuits.")
         return
 
-    content_to_say = response_data.get("content")
     if response_data.get("response_type") == "function_call":
-        function_generated_text = handle_function_call(pepper, response_data.get("function_call"), dynamic_map, menu_data, ignored_ids)
-        if function_generated_text:
-            content_to_say = function_generated_text
-    
-    if content_to_say:
-        say_simulation.say(pepper, content_to_say)
+        result_text = handle_function_call(
+            pepper,
+            response_data["function_call"],
+            menu_data
+        )
+        if result_text:
+            say_simulation.say(pepper, result_text)
+    else:
+        content = response_data.get("content")
+        if content:
+            say_simulation.say(pepper, content)
 
-def handle_function_call(pepper, function_call, dynamic_map, menu_data, ignored_ids):
-    if not function_call: return None
-    func_name = function_call.get("name")
+def handle_function_call(pepper, function_call, menu_data):
+
+    name = function_call.get("name")
     args = function_call.get("arguments", {})
-    print(f"[Bridge] Executing function: {func_name} with arguments {args}")
 
-    if func_name == "Maps_to":
-        location_label = args.get("location", "").lower().strip()
-        if not location_label: return "I did not understand the destination. Can you repeat?"
-        target_coords = next((obj['world_coordinates'] for obj in dynamic_map if location_label in obj['label'].lower()), None)
-        if target_coords:
-            motion_simulation.moveToGoal(pepper, tuple(target_coords[:2]), ignored_ids)
-            return "Ok, we have arrived at the destination."
-        return f"I'm sorry, I looked around but I can't find {location_label}."
-    
-    elif func_name == "get_price":
-        product_name = args.get("product", "").lower().strip()
-        item = next((item for item in menu_data if product_name in item["name"].lower()), None)
-        return f"The price of {item['name']} is {item.get('price', 'unknown')} euros." if item else f"I could not find price information for {product_name}."
+    if name == "Maps_to":
+        loc = args.get("location", "").lower().strip()
+        if not loc:
+            return "I did not understand the destination. Could you repeat?"
 
-    elif func_name == "get_allergens":
-        product_name = args.get("product", "").lower().strip()
-        item = next((item for item in menu_data if product_name in item["name"].lower()), None)
+        dyn_map = _perceptor.get_dynamic_semantic_map()
+        coords = next(
+            ((x, y) for label, x, y, _ in dyn_map
+             if loc in label.lower()),
+            None
+        )
+        if coords:
+            moveToGoalDynamic(pepper, coords)
+            return f"Okay, I've arrived at the {loc}."
+        else:
+            return f"Sorry, I couldn't find any {loc} nearby."
+
+    elif name == "get_price":
+        prod = args.get("product", "").lower().strip()
+        item = next((i for i in menu_data
+                     if prod in i["name"].lower()), None)
         if item:
-            allergens = item.get("allergens", [])
-            return f"The allergens for {item['name']} are: {', '.join(allergens)}." if allergens else f"There are no specified allergens for {item['name']}."
-        return f"I could not find allergen information for {product_name}."
-        
-    return "I am not yet able to perform this action."
+            return f"The price of {item['name']} is {item['price']} euros."
+        else:
+            return f"I could not find price information for {prod}."
+
+    elif name == "get_allergens":
+        prod = args.get("product", "").lower().strip()
+        item = next((i for i in menu_data
+                     if prod in i["name"].lower()), None)
+        if item:
+            alls = item.get("allergens", [])
+            if alls:
+                joined = ", ".join(alls)
+                return f"The allergens for {item['name']} are: {joined}."
+            else:
+                return f"There are no specified allergens for {item['name']}."
+        else:
+            return f"I could not find allergen information for {prod}."
+
+    else:
+        return "I'm not yet able to perform that action."
