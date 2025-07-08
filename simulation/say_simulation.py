@@ -10,10 +10,10 @@ def say(pepper, strsay):
 
     time_d = max(2, len(strsay)*0.1)
 
-    def speack():
+    def speak():
         position = pepper.getPosition()
-        speack_position = [position[0], position[1], position[2] + 2]
-        p.addUserDebugText(strsay, speack_position, textColorRGB=[0, 0, 0], textSize=1.5, lifeTime=time_d)
+        speak_position = [position[0], position[1], position[2] + 2]
+        p.addUserDebugText(strsay, speak_position, textColorRGB=[0, 0, 0], textSize=1.5, lifeTime=time_d)
 
     def move():
 
@@ -25,13 +25,13 @@ def say(pepper, strsay):
             pepper.setAngles(["HeadYaw", "HeadPitch"], [-0.1, 0.2], 0.1)
             time.sleep(0.5)
 
-    speack_thread = Thread(target=speack)
+    speak_thread = Thread(target=speak)
     move_thread = Thread(target=move)
 
-    speack_thread.start()
+    speak_thread.start()
     move_thread.start()
 
-    speack_thread.join()
+    speak_thread.join()
     move_thread.join()
 
     print(strsay)
