@@ -1,8 +1,8 @@
 import requests
 import json
 from simulation import say_simulation
-from motion_simulation_dynamic import moveToGoalDynamic
-from perception import PerceptionModule
+from simulation.motion_simulation_dynamic import moveToGoalDynamic
+from simulation.perception import PerceptionModule
 
 LLM_SERVER_URL = "http://localhost:8000/chat"
 
@@ -40,7 +40,7 @@ def process_user_command(text_command):
         print(f"[Bridge] ERROR contacting LLM: {e}")
         return None
 
-def handle_llm_response(pepper, response_data, menu_data):
+def handle_llm_response(pepper, response_data, dynamic_map, menu_data, ignored_ids):
     
     _perceptor.update_semantic_map(pepper)
 
@@ -53,7 +53,9 @@ def handle_llm_response(pepper, response_data, menu_data):
         result_text = handle_function_call(
             pepper,
             response_data["function_call"],
-            menu_data
+            dynamic_map,
+            menu_data,
+            ignored_ids
         )
         if result_text:
             say_simulation.say(pepper, result_text)
@@ -62,8 +64,8 @@ def handle_llm_response(pepper, response_data, menu_data):
         if content:
             say_simulation.say(pepper, content)
 
-def handle_function_call(pepper, function_call, menu_data):
-
+def handle_function_call(pepper, function_call, dynamic_map, menu_data, ignored_ids):
+ 
     name = function_call.get("name")
     args = function_call.get("arguments", {})
 
@@ -72,9 +74,9 @@ def handle_function_call(pepper, function_call, menu_data):
         if not loc:
             return "I did not understand the destination. Could you repeat?"
 
-        dyn_map = _perceptor.get_dynamic_semantic_map()
         coords = next(
-            ((x, y) for label, x, y, _ in dyn_map
+            ((x, y) for obj in dynamic_map
+             for label, x, y, z in [(obj["label"], *obj["world_coordinates"])]
              if loc in label.lower()),
             None
         )
@@ -100,8 +102,7 @@ def handle_function_call(pepper, function_call, menu_data):
         if item:
             alls = item.get("allergens", [])
             if alls:
-                joined = ", ".join(alls)
-                return f"The allergens for {item['name']} are: {joined}."
+                return f"The allergens for {item['name']} are: {', '.join(alls)}."
             else:
                 return f"There are no specified allergens for {item['name']}."
         else:

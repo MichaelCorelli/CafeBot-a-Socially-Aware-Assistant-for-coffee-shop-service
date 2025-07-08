@@ -28,20 +28,25 @@ class PerceptionModule:
         self.dynamic_semantic_map = []
 
     def get_camera_image(self, pepper, width=320, height=240):
-        
-        view_matrix = pepper.getCameraViewMatrix(2)
-        proj_matrix = pepper.getCameraProjectionMatrix(2)
-        _, _, rgba_img, depth_buf, _ = p.getCameraImage(
+      
+        view_list = pepper.getCameraViewMatrix(2)
+        proj_list = pepper.getCameraProjectionMatrix(2)
+        _, _, rgba, depth_buf, _ = p.getCameraImage(
             width, height,
-            viewMatrix=view_matrix,
-            projectionMatrix=proj_matrix
+            viewMatrix=view_list,
+            projectionMatrix=proj_list
         )
-        if rgba_img is None:
+        if rgba is None:
             return None, None, None, None
 
-        image_rgba = np.array(rgba_img, dtype=np.uint8).reshape((height, width, 4))
-        image_bgr = cv2.cvtColor(image_rgba, cv2.COLOR_RGBA2BGR)
-        return image_bgr, depth_buf, view_matrix, proj_matrix
+        rgba = np.array(rgba, dtype=np.uint8).reshape((height, width, 4))
+        image_bgr = cv2.cvtColor(rgba, cv2.COLOR_RGBA2BGR)
+        depth_buf = np.array(depth_buf, dtype=np.float32).reshape((height, width))
+
+        view = np.array(view_list, dtype=np.float32).reshape((4,4), order='F')
+        proj = np.array(proj_list, dtype=np.float32).reshape((4,4), order='F')
+
+        return image_bgr, depth_buf, view, proj
 
     def detect_objects(self, image):
         

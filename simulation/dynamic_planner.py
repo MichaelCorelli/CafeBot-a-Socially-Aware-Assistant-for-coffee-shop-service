@@ -1,7 +1,13 @@
 import numpy as np
 import heapq
-from default_configuration import GRID_SIZE, GRID_RESOLUTION, PROXEMIC_BUFFER
-from perception import PerceptionModule
+try:
+    from simulation.default_configuration_simulation import (
+        GRID_SIZE, GRID_RESOLUTION, PROXEMIC_BUFFER)
+except ModuleNotFoundError:
+    from default_configuration import (
+        GRID_SIZE, GRID_RESOLUTION, PROXEMIC_BUFFER)
+
+from simulation.perception import PerceptionModule
 
 class DynamicNavigator:
     """

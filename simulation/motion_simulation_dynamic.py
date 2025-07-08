@@ -1,7 +1,7 @@
 import pybullet as p
 import time
-from perception import PerceptionModule
-from dynamic_planner import DynamicNavigator
+from simulation.perception import PerceptionModule
+from simulation.dynamic_planner import DynamicNavigator
 
 """
 Simulation‐side navigation module with continuous replanning

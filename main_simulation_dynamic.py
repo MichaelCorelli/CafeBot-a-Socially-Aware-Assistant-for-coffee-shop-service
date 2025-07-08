@@ -1,4 +1,4 @@
-from qibullet import SimulationManager
+from qibullet import SimulationManager, PepperVirtual
 import time
 import pybullet as p
 import math
@@ -28,26 +28,70 @@ def build_environment(client_id):
     print("Environment built.")
     return [person_id]
 
+def _make_view_proj(pepper, camera_link):
+
+    link_state = p.getLinkState(pepper.robot_model, camera_link,
+                                computeForwardKinematics=True)
+    cam_pos   = link_state[4]     
+    cam_orn   = link_state[5]         
+    cam_mat   = p.getMatrixFromQuaternion(cam_orn)
+    cam_dir   = [cam_mat[0], cam_mat[3], cam_mat[6]] 
+    cam_up    = [cam_mat[2], cam_mat[5], cam_mat[8]] 
+ 
+    target    = [cam_pos[i] + cam_dir[i] for i in range(3)]
+    view      = p.computeViewMatrix(cam_pos, target, cam_up)
+    proj      = p.computeProjectionMatrixFOV(fov=60,
+                                             aspect=4/3,
+                                             nearVal=0.1,
+                                             farVal=5.0)
+    return view, proj
+
+def getCameraViewMatrix(self, cam_id=2):
+   
+    link_index = {0: 59, 1: 59, 2: 60}.get(cam_id, 60)  
+    return _make_view_proj(self, link_index)[0]
+
+def getCameraProjectionMatrix(self, cam_id=2):
+    link_index = {0: 59, 1: 59, 2: 60}.get(cam_id, 60)
+    return _make_view_proj(self, link_index)[1]
+
+PepperVirtual.getCameraViewMatrix = getCameraViewMatrix
+PepperVirtual.getCameraProjectionMatrix = getCameraProjectionMatrix
+
 def scan_environment(pepper, perception_module):
-    
-    print("Starting environment scan...")
+    print("Starting environment scan…")
     all_found_objects = []
-    initial_pose, _ = p.getBasePositionAndOrientation(pepper.robot_model)
-    for angle in np.linspace(0, 2 * np.pi, 10, endpoint=False):
-        p.resetBasePositionAndOrientation(pepper.robot_model, initial_pose, p.getQuaternionFromEuler([0, 0, angle]))
-        time.sleep(0.1) # Allow simulation to stabilize
-        image = perception_module.get_camera_image(pepper)
-        if image is not None:
-            detections_3d = perception_module.localize_objects_3d(pepper, perception_module.detect_objects(image))
-            all_found_objects.extend(detections_3d)
-            
-    
-    unique_objects = {f"{obj['label']}_{tuple(np.round(obj['world_coordinates'],0))}": obj for obj in all_found_objects}
-    p.resetBasePositionAndOrientation(pepper.robot_model, initial_pose, p.getQuaternionFromEuler([0, 0, 0]))
-    
+    initial_pose, initial_orient = p.getBasePositionAndOrientation(pepper.robot_model)
+
+    for angle in np.linspace(0, 2*np.pi, 10, endpoint=False):
+        p.resetBasePositionAndOrientation(
+            pepper.robot_model,
+            initial_pose,
+            p.getQuaternionFromEuler([0, 0, angle])
+        )
+        time.sleep(0.1)
+        img, depth_buf, view, proj = perception_module.get_camera_image(pepper)
+        if img is None:
+            continue
+
+        det2d = perception_module.detect_objects(img)
+        det3d = perception_module.localize_objects_3d(det2d, depth_buf, view, proj)
+        all_found_objects.extend(det3d)
+
+    p.resetBasePositionAndOrientation(
+        pepper.robot_model,
+        initial_pose,
+        p.getQuaternionFromEuler([0, 0, 0])
+    )
+
+    unique = {
+      f"{o['label']}_{tuple(np.round(o['world_coordinates'],0))}": o
+      for o in all_found_objects
+    }
     global dynamic_semantic_map
-    dynamic_semantic_map = list(unique_objects.values())
-    print(f"Scan complete. Dynamic map contains {len(dynamic_semantic_map)} unique objects.")
+    dynamic_semantic_map = list(unique.values())
+    print(f"Scan complete. Found {len(dynamic_semantic_map)} unique objects.")
+
 
 def run_interaction(command, pepper, menu_data, ignored_obstacles):
     """Helper function to process a command and handle the response."""

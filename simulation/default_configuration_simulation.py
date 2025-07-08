@@ -2,6 +2,11 @@ import time
 
 from . import say_simulation
 
+GRID_SIZE = 64
+GRID_RESOLUTION = 0.25
+PROXEMIC_BUFFER = 1.3
+
+
 def wake_up(pepper):
 
     time.sleep(2)
