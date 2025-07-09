@@ -4,6 +4,7 @@ This repository contains the source code for CaféBot, an autonomous, socially-a
 - **Advanced Natural Language Processing** powered by Large Language Models for adaptive, role-based dialogue management.
 - **Semantic Environmental Mapping** for spatial reasoning and precise product lookup.
 - **Multimodal Interaction** (vocal, gestural, and tablet GUI) with dynamic adaptation based on user role and real-time cognitive load.
+-   **Dynamic 3D Perception & Semantic Mapping**: In the simulation, CaféBot performs an initial 360-degree scan of its environment to build a `dynamic_semantic_map`. Using a **YOLOv8** model, it detects objects, localizes them in 3D space, and maps general COCO labels to cafe-specific items (e.g., 'cup' becomes 'cappuccino'), creating a rich, queryable world model.
 - **Human-Aware Navigation** using an A*-derived planner with dynamic collision avoidance that differentiates between static obstacles and moving humans.
 - **Vision-Based Perception** (YOLO object detection) to recognize user-presented products and retrieve details such as pricing, location, and qualitative attributes.
 
@@ -31,7 +32,9 @@ CafeBot-a-Socially-Aware-Assistant-for-coffee-shop-service/
 │
 ├── simulation/                  # Source code and assets for the simulation
 │   ├── motion_simulation.py
+│   ├── motion_simulation_dynamic.py
 │   ├── perception.py
+│   ├── dynamic_planner.py
 │   ├── live_speech.py
 │   ├── say_simulation.py
 │   ├── dance_simulation.py
