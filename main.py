@@ -7,6 +7,7 @@ import argparse
 import time
 import math
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 import default_configuration
 import motion
 import say
