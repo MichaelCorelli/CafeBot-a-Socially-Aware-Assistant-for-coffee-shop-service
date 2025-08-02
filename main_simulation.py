@@ -137,7 +137,16 @@ if __name__ == "__main__":
     say_simulation.say(pepper, strsay)
 
     #Move to goal with A* algorithm
-    p_goal = (2, 2)
+    p_goal = (5, 5)
+    motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
+
+    p_goal = (5, -5)
+    motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
+
+    p_goal = (-5, -5)
+    motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
+
+    p_goal = (-5, 5)
     motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
     p_goal = (3, 0) #the test is here
