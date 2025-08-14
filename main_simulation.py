@@ -149,6 +149,9 @@ if __name__ == "__main__":
     p_goal = (-5, 5)
     motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
+    p_goal = (0, 0)
+    motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
+
     p_goal = (3, 0) #the test is here
     motion_simulation.moveToGoal(pepper, p_goal, ignored_ids=[test_id])
 
