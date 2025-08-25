@@ -10,3 +10,5 @@ pybullet
 ultralytics
 SpeechRecognition
 PyAudio
+textblob
+vaderSentiment

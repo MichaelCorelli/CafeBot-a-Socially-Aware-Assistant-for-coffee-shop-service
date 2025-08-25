@@ -8,7 +8,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import logging
 from typing import Literal, Optional, Dict, Any
-
+from simulation.emotion_analyzer import EmotionAnalyzer, EmotionState
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -104,6 +104,7 @@ SYSTEM_PROMPT = (
     "Remember: Your entire output must be a single, valid JSON object as specified."
 )
 
+emotion_analyzer = EmotionAnalyzer(history_size=10)
 
 #KNOWLEDGE BASE (FAISS)
 index = None
@@ -153,8 +154,26 @@ class LLMResponse(BaseModel):
 #FASTAPI APP
 app = FastAPI()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+@app.post("/reset_emotion")
+async def reset_emotion():
+    emotion_analyzer.reset_conversation()
+    return {"status": "emotion_context_reset"}
+
 @app.post("/chat", response_model=LLMResponse)
 async def chat(u: Utterance):
+    emotion_state, confidence, polarity = emotion_analyzer.analyze_sentiment(u.text)
+    emotional_context = emotion_analyzer.get_emotional_context()
+
+    logging.info(
+        f"Emotion Analysis - State: {emotion_state}, "
+        f"Confidence: {confidence:.2f}, "
+        f"Frustration: {emotional_context['frustration_level']:.2f}, "
+        f"Confusion: {emotional_context['confusion_level']:.2f}, "
+        f"Engagement: {emotional_context['engagement']:.2f}"
+    )
+    
+    #RAG context retrieval
     context = ""
     if index and docs:
         try:
@@ -165,24 +184,63 @@ async def chat(u: Utterance):
             context = "\n\n".join(docs[i] for i in I[0])
         except Exception as e:
             logging.error(f"Error during RAG context retrieval: {e}")
+    
+    #Enhanced prompt with emotional context
+    emotional_prompt_addon = ""
+    
+    if emotional_context['frustration_level'] > 0.6:
+        emotional_prompt_addon = """
+        The user appears FRUSTRATED. You must:
+        - Acknowledge their difficulty explicitly
+        - Provide very clear, step-by-step help
+        - Offer to connect them with human staff if needed
+        - Use reassuring, patient language
+        """
+    elif emotional_context['confusion_level'] > 0.5:
+        emotional_prompt_addon = """
+        The user seems CONFUSED. You should:
+        - Break down information into simple parts
+        - Provide specific examples
+        - Check their understanding
+        - Offer visual guidance when possible
+        """
+    elif emotion_state == "positive" and emotional_context['engagement'] > 0.7:
+        emotional_prompt_addon = """
+        The user is ENGAGED and POSITIVE. You should:
+        - Match their enthusiasm
+        - Provide additional interesting details
+        - Be more conversational and warm
+        """
 
-    user_message_content = f"Session status: {u.session_status}.\n"
-    if u.session_status == 'ongoing_interaction':
-        user_message_content += f"Current known role: {u.current_role}.\n"
-    user_message_content += f"User query: {u.text}"
-
+    if emotional_context['recommendations']:
+        emotional_prompt_addon += f"\nRecommended adaptations: {', '.join(emotional_context['recommendations'])}"
+    
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "system", "content": f"Retrieved Context (use if relevant):\n{context}"},
-        {"role": "user", "content": user_message_content}
+        {"role": "system", "content": SYSTEM_PROMPT + emotional_prompt_addon},
+        {"role": "system", "content": f"Retrieved Context (use if relevant):\n{context}" if context else "No specific context available."},
+        {
+            "role": "user", 
+            "content": (
+                f"Session status: {u.session_status}.\n"
+                f"Current known role: {u.current_role if u.session_status == 'ongoing_interaction' else 'unknown'}.\n"
+                f"Emotional indicators: {emotion_state} (intensity: {emotional_context['intensity']:.2f})\n"
+                f"User query: {u.text}"
+            )
+        }
     ]
+    
+    temperature = 0.1
+    if emotional_context['frustration_level'] > 0.5:
+        temperature = 0.05
+    elif emotion_state == "positive":
+        temperature = 0.3
 
     try:
-        logging.info(f"Sending to LLM. Messages: {json.dumps(messages, indent=2)}")
+        logging.info(f"Sending to LLM with emotion context. Temperature: {temperature}")
         resp = client.chat.completions.create(
             model=LLM_MODEL,
             messages=messages,
-            temperature=0.1,
+            temperature=temperature,
             max_tokens=300,
             response_format={ "type": "json_object" }
         )
@@ -205,17 +263,22 @@ async def chat(u: Utterance):
         except json.JSONDecodeError as e:
             logging.error(f"Failed to parse LLM JSON output. Error: {e}. Output: {raw_llm_output}")
             
+            if emotional_context['frustration_level'] > 0.6:
+                fallback_content = "I understand this is frustrating. Let me get someone to help you."
+            else:
+                fallback_content = "I encountered an issue. Please try rephrasing."
+            
             return LLMResponse(
                 determined_role="customer",
                 response_type="content",
-                content="I encountered an issue processing the response structure. Please try again."
+                content=fallback_content
             )
         except ValueError as e:
             logging.error(f"LLM output validation error: {e}. Output: {raw_llm_output}")
             return LLMResponse(
                 determined_role="customer",
                 response_type="content",
-                content="There was a validation error in the response I received. Please rephrase."
+                content="Let me try to understand that better. Could you rephrase?"
             )
 
     except openai.error.OpenAIError as e:
